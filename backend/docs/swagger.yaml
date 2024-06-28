@@ -1,0 +1,113 @@
+definitions:
+  httputil.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+  models.UrlInfoResponse:
+    properties:
+      count:
+        type: integer
+      ips:
+        items:
+          type: string
+        type: array
+      originalUrl:
+        type: string
+    type: object
+  models.UrlShortenResponse:
+    properties:
+      shortUrl:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a simple project that i am using to learn Go and other interesting
+    stuff
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /api/v1/getInfo/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get info about how many times and what IPs where entering your
+        site
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UrlInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Info about shorten URL
+      tags:
+      - shortenURL
+  /api/v1/shortenURL:
+    post:
+      consumes:
+      - application/json
+      description: Shortens your  URL to small format for you to use it
+      parameters:
+      - description: Shorten URL
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UrlShortenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Shorten URL
+      tags:
+      - shortenURL
+  /link/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Redirects to link that you have enetered on shortenURL path
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Redirect to link
+      tags:
+      - shortenURL
+swagger: "2.0"

@@ -5,20 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Go normally",
+            "name": "Standart start",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/backend"
+            "program": "${workspaceFolder}"
         },
-
-        {
-            "name": "Go Containerized Debug",
-            "type": "go",
-            "request": "attach",
-            "mode": "remote",
-            "port":4000,
-            "host":"127.0.0.1"
-        }
     ]
 }
