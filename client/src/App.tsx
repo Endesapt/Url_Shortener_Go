@@ -8,23 +8,23 @@ import QrCodeGenerator from './Pages/QrCodeCreator';
 
 function App() {
   
-  window.onclick = function(event) {
+   window.addEventListener("click",function(event) {
     if(!event.target)return
     if(!(event.target instanceof Element))return 
     if (!(event.target as Element).classList.contains("dropdown")) {
-      if((event.target as Element).parentElement!.getElementsByClassName("dropdown").length>0)return
+      if((event.target as Element).getElementsByClassName("dropdown").length>0)return
       const allDropDowns=Array.from(document.getElementsByClassName("dropdown"))
       for(var el of allDropDowns){
           el.classList.add("hidden")
       }
     }
-  }
+  })
   function showDropDown( e: React.MouseEvent<HTMLDivElement, MouseEvent>){
       const allDropDowns=Array.from(document.getElementsByClassName("dropdown"))
       for(var el of allDropDowns){
           el.classList.add("hidden")
       }
-      const dropDown=(e.target as HTMLElement).getElementsByClassName("dropdown")[0]
+      const dropDown=(e.currentTarget as HTMLElement).getElementsByClassName("dropdown")[0]
       dropDown?.classList?.remove("hidden")
   }
   return (
