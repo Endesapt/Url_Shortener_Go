@@ -16,11 +16,15 @@ definitions:
         items:
           type: string
         type: array
+      issuerID:
+        type: string
       originalUrl:
         type: string
     type: object
   models.UrlShortenResponse:
     properties:
+      issuerID:
+        type: string
       shortUrl:
         type: string
     type: object
@@ -57,7 +61,28 @@ paths:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Info about shorten URL
       tags:
-      - shortenURL
+      - ShortenURL
+  /api/v1/getLinks:
+    get:
+      consumes:
+      - application/json
+      description: Get all links that associated your account if you are registered
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Get all links
+      tags:
+      - ShortenURL
   /api/v1/shortenURL:
     post:
       consumes:
@@ -86,7 +111,26 @@ paths:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Shorten URL
       tags:
-      - shortenURL
+      - ShortenURL
+  /auth/callback:
+    get:
+      description: Redirects to / page with your credentials
+      responses: {}
+      summary: Callback to page
+      tags:
+      - Auth
+  /auth/login:
+    get:
+      responses: {}
+      summary: Login
+      tags:
+      - Auth
+  /auth/logout:
+    get:
+      responses: {}
+      summary: Logout
+      tags:
+      - Auth
   /link/{id}:
     get:
       consumes:
@@ -109,5 +153,5 @@ paths:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Redirect to link
       tags:
-      - shortenURL
+      - ShortenURL
 swagger: "2.0"

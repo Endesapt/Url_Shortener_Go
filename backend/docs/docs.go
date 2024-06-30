@@ -29,7 +29,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "shortenURL"
+                    "ShortenURL"
                 ],
                 "summary": "Info about shorten URL",
                 "parameters": [
@@ -57,6 +57,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/getLinks": {
+            "get": {
+                "description": "Get all links that associated your account if you are registered",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ShortenURL"
+                ],
+                "summary": "Get all links",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/shortenURL": {
             "post": {
                 "description": "Shortens your  URL to small format for you to use it",
@@ -67,7 +99,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "shortenURL"
+                    "ShortenURL"
                 ],
                 "summary": "Shorten URL",
                 "parameters": [
@@ -101,6 +133,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/callback": {
+            "get": {
+                "description": "Redirects to / page with your credentials",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Callback to page",
+                "responses": {}
+            }
+        },
+        "/auth/login": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "responses": {}
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "responses": {}
+            }
+        },
         "/link/{id}": {
             "get": {
                 "description": "Redirects to link that you have enetered on shortenURL path",
@@ -111,7 +171,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "shortenURL"
+                    "ShortenURL"
                 ],
                 "summary": "Redirect to link",
                 "parameters": [
@@ -163,6 +223,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "issuerID": {
+                    "type": "string"
+                },
                 "originalUrl": {
                     "type": "string"
                 }
@@ -171,6 +234,9 @@ const docTemplate = `{
         "models.UrlShortenResponse": {
             "type": "object",
             "properties": {
+                "issuerID": {
+                    "type": "string"
+                },
                 "shortUrl": {
                     "type": "string"
                 }
