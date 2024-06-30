@@ -4,9 +4,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Endesapt/url_shortener_go/controller"
 	"github.com/Endesapt/url_shortener_go/docs"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
@@ -57,6 +59,17 @@ func main() {
 	//gin router
 	c := controller.NewController(rdb)
 	r := gin.Default()
+
+	//cors
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	r.GET("link/:id", c.RedirectURL)
 	v1 := r.Group("/api/v1")
 	{
