@@ -1,10 +1,12 @@
 import { CredentialResponse, GoogleLogin, useGoogleLogin, useGoogleOAuth } from "@react-oauth/google";
 import { ErrorResponse } from "react-router-dom";
+import { UserInfo } from "../Models/UserInfo";
 
-export default function SignIn(){
+export default function SignIn({setUserInfo}:{
+  setUserInfo:React.Dispatch<React.SetStateAction<UserInfo>>
+}){
     const googleLogin = useGoogleLogin({
         onSuccess: codeResponse =>{
-            console.log(codeResponse.code);
             fetch('http://localhost:80/auth/google', {
                 method: 'POST',
                 headers: {
@@ -14,7 +16,12 @@ export default function SignIn(){
               })
               .then(response => response.json())
               .then(data => {
-                console.log('Backend response:', data);
+                console.log(data)
+                localStorage.setItem("access_token",data.access_token)
+                localStorage.setItem("email",data.email)
+                localStorage.setItem("expires_in",data.expires_in)
+                localStorage.setItem("photo_url",data.photo_url)
+                setUserInfo({...data})
               })
               .catch(error => {
                 console.error('Error:', error);

@@ -6,10 +6,20 @@ import { Link, Navigate, Route, Router, Routes } from 'react-router-dom';
 import UrlShortener from './Pages/UrlShortener';
 import QrCodeGenerator from './Pages/QrCodeCreator';
 import SignIn from './Components/SignIn';
+import { UserInfo } from './Models/UserInfo';
+import UserProfile from './Components/UserProfile';
+
+
 
 function App() {
-  
-   window.addEventListener("click",function(event) {
+
+  const [userInfo,setUserInfo]=useState({
+    access_token:"ya29.a0AXooCgtw8t4jhgthIVQQSMW7uDmo-CrMsf0zVwbdfcb8M1KnuMH_WiJImYQZRPEtTSSQKbuitkBGX56ZlnC073jM5DByIVu5q_zZKEa-FsqAmqtVnRr7TCwk9aCfSNJ99jpsP3J0F4mbkUfI2SR7OuEDAloqdTj4p6CvaCgYKAWwSARISFQHGX2MiDr_hX_g8YsVQA2lkmPxEwA0171",
+    email:"matveykaplay1234@gmail.com",
+    photo_url:"https://lh3.googleusercontent.com/a/ACg8ocIKl5q-nfJ2ddNb5KBt-Ao-lSytRQFk7EIdrjJ32QcOI0bzG-E=s96-c"
+  } as UserInfo)
+
+  window.addEventListener("click",function(event) {
     if(!event.target)return
     if(!(event.target instanceof Element))return 
     if (!(event.target as Element).classList.contains("dropdown")) {
@@ -59,7 +69,8 @@ function App() {
           </div>
         </div>
         <div className=' ml-auto flex items-center gap-3'>
-          <SignIn/>
+          {Object.keys(userInfo).length === 0?<SignIn setUserInfo={setUserInfo}/>:<UserProfile userInfo={userInfo} setUserInfo={setUserInfo} />}
+          
         </div>
       </div>
       <div className=' px-6 flex items-center flex-col gap-10'>

@@ -114,8 +114,8 @@ export default function UrlShortener(){
                 Create QR Code
               </p>
               Easily create trackable QR Codes to share with your friends and other people!
+              
             </div>
-            
           </div>
       </>)
 }
