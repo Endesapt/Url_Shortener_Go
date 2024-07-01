@@ -5,6 +5,7 @@ import { faAngleDown, faCode,  faLink, faQrcode, faRss } from '@fortawesome/free
 import { Link, Navigate, Route, Router, Routes } from 'react-router-dom';
 import UrlShortener from './Pages/UrlShortener';
 import QrCodeGenerator from './Pages/QrCodeCreator';
+import SignIn from './Components/SignIn';
 
 function App() {
   
@@ -58,9 +59,7 @@ function App() {
           </div>
         </div>
         <div className=' ml-auto flex items-center gap-3'>
-          <div className='bg-[#EE6123] px-4 py-2 rounded-md text-white text-lg font-medium hover:cursor-pointer'>
-            Sing up
-          </div>
+          <SignIn/>
         </div>
       </div>
       <div className=' px-6 flex items-center flex-col gap-10'>

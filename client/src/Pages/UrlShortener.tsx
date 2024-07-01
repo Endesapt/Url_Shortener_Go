@@ -1,6 +1,7 @@
 import { faAngleRight, faArrowsToCircle, faChartLine, faCopy, faQrcode } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
+import SignIn from "../Components/SignIn"
 
 export default function UrlShortener(){
   const [linkText,setlinkText]=useState("")
@@ -114,6 +115,7 @@ export default function UrlShortener(){
               </p>
               Easily create trackable QR Codes to share with your friends and other people!
             </div>
+            
           </div>
       </>)
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -10,11 +9,7 @@ import (
 	"github.com/Endesapt/url_shortener_go/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/google"
 	"github.com/redis/go-redis/v9"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -38,24 +33,6 @@ func main() {
 		Addr: os.Getenv("REDIS_ADDR"),
 	})
 
-	//goth setup
-	key := os.Getenv("SESSION_SECRET") // Replace with your SESSION_SECRET or similar
-	maxAge := 86400 * 30               // 30 days
-	isProd := false                    // Set to true when serving over https
-
-	store := sessions.NewCookieStore([]byte(key))
-	store.MaxAge(maxAge)
-	store.Options.Path = "/"
-	store.Options.SameSite = http.SameSiteDefaultMode
-	store.Options.HttpOnly = true // HttpOnly should always be enabled
-	store.Options.Secure = isProd
-
-	gothic.Store = store
-	goth.UseProviders(
-		google.New(os.Getenv("AUTH_CLIENT_ID"),
-			os.Getenv("AUTH_CLIENT_SECRET"), os.Getenv("AUTH_CALLBACK_URL")),
-	)
-
 	//gin router
 	c := controller.NewController(rdb)
 	r := gin.Default()
@@ -64,7 +41,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "GET"},
-		AllowHeaders:     []string{"Origin"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -79,9 +56,7 @@ func main() {
 	}
 	auth := r.Group("/auth")
 	{
-		auth.GET("/login", c.Login)
-		auth.GET("/callback", c.Callback)
-		auth.GET("logout", c.Logout)
+		auth.POST("/google", c.Login)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(":8080")

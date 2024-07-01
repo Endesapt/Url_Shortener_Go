@@ -96,7 +96,7 @@ func (c *Controller) RedirectURL(ctx *gin.Context) {
 	id := ctx.Param("id")
 	url, err := c.RedisClient.HGet(ctx.Request.Context(), id, "originalUrl").Result()
 	if err == redis.Nil {
-		httputil.NewError(ctx, http.StatusBadRequest, errors.New("There is no such short url!"))
+		httputil.NewError(ctx, http.StatusBadRequest, errors.New("there is no such short url"))
 		return
 	} else if err != nil {
 		panic(err)
