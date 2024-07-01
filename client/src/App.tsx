@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import logo from './bitly_logo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faCode,  faLink, faQrcode, faRss } from '@fortawesome/free-solid-svg-icons';
@@ -8,16 +8,36 @@ import QrCodeGenerator from './Pages/QrCodeCreator';
 import SignIn from './Components/SignIn';
 import { UserInfo } from './Models/UserInfo';
 import UserProfile from './Components/UserProfile';
+import LinkManagment from './Pages/LinkManagment';
+import { UrlInfo } from './Models/UrlInfo';
 
 
 
 function App() {
 
-  const [userInfo,setUserInfo]=useState({
-    access_token:"ya29.a0AXooCgtw8t4jhgthIVQQSMW7uDmo-CrMsf0zVwbdfcb8M1KnuMH_WiJImYQZRPEtTSSQKbuitkBGX56ZlnC073jM5DByIVu5q_zZKEa-FsqAmqtVnRr7TCwk9aCfSNJ99jpsP3J0F4mbkUfI2SR7OuEDAloqdTj4p6CvaCgYKAWwSARISFQHGX2MiDr_hX_g8YsVQA2lkmPxEwA0171",
-    email:"matveykaplay1234@gmail.com",
-    photo_url:"https://lh3.googleusercontent.com/a/ACg8ocIKl5q-nfJ2ddNb5KBt-Ao-lSytRQFk7EIdrjJ32QcOI0bzG-E=s96-c"
-  } as UserInfo)
+  const [userInfo,setUserInfo]=useState({} as UserInfo)
+  const [localLinks,setLinksInfo]=useState(Array<{shortUrl:string,originalUrl:string}>())
+
+  
+  useEffect(()=>{
+    const email=localStorage.getItem("email")
+    const photo_url=localStorage.getItem("photo_url")
+    const id_token=localStorage.getItem("id_token")
+    if(email==null){
+      return
+    }
+    let links:Array<string>=[]
+    const jsonLinks=localStorage.getItem("userLinks")
+    if(jsonLinks){
+      links=JSON.parse(jsonLinks);
+    }
+    setUserInfo({
+      email:email,
+      photo_url:photo_url,
+      id_token:id_token,
+      links:links
+    } as UserInfo)
+  },[])
 
   window.addEventListener("click",function(event) {
     if(!event.target)return
@@ -41,11 +61,11 @@ function App() {
   return (
     <>
       <div className=' bg-[#284243] px-20 py-4 flex gap-10 items-center mb-6'>
-        <img className=' h-12 ' src={logo}></img>
+        <Link to="/"><img className=' h-12 ' src={logo}></img></Link>
         <div className=' flex gap-2 items-center text-white text-lg font-medium relative hover:cursor-pointer' onClick={(e)=>showDropDown(e)}>
           Products<FontAwesomeIcon icon={faAngleDown}/>
           <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48'>
-            <Link to="/" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
+            <Link to="/link-managment" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faLink}/>
               Link Managment 
             </Link>
@@ -62,21 +82,22 @@ function App() {
               <FontAwesomeIcon icon={faRss}/>
               Blog 
             </div>
-            <div className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
+            <Link to="http://localhost/swagger/index.html" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faCode}/>
               API Documentation
-            </div>
+            </Link>
           </div>
         </div>
         <div className=' ml-auto flex items-center gap-3'>
-          {Object.keys(userInfo).length === 0?<SignIn setUserInfo={setUserInfo}/>:<UserProfile userInfo={userInfo} setUserInfo={setUserInfo} />}
+          {userInfo.email==null?<SignIn setUserInfo={setUserInfo}/>:<UserProfile userInfo={userInfo} setUserInfo={setUserInfo} />}
           
         </div>
       </div>
       <div className=' px-6 flex items-center flex-col gap-10'>
         <Routes>
           <Route path="/qr-code-generator" element={<QrCodeGenerator/>}/>
-          <Route path="/" element={<UrlShortener/>}/>
+          <Route path="/link-managment" element={<LinkManagment userInfo={userInfo}/>}/>
+          <Route path="/" element={<UrlShortener userInfo={userInfo} setLinksInfo={setLinksInfo} localLinks={localLinks} />}/>
           <Route path="*" element={<Navigate to="/"/>}/>
         </Routes>
       </div>

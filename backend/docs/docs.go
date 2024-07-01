@@ -133,31 +133,24 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/callback": {
-            "get": {
-                "description": "Redirects to / page with your credentials",
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Callback to page",
-                "responses": {}
-            }
-        },
-        "/auth/login": {
-            "get": {
+        "/auth/google": {
+            "post": {
+                "description": "Returns credentials from code sended from client",
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Login",
-                "responses": {}
-            }
-        },
-        "/auth/logout": {
-            "get": {
-                "tags": [
-                    "Auth"
+                "parameters": [
+                    {
+                        "description": "Code from google auth",
+                        "name": "code",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
-                "summary": "Logout",
                 "responses": {}
             }
         },

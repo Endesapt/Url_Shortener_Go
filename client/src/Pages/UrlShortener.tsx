@@ -2,26 +2,38 @@ import { faAngleRight, faArrowsToCircle, faChartLine, faCopy, faQrcode } from "@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 import SignIn from "../Components/SignIn"
+import { UserInfo } from "../Models/UserInfo"
 
-export default function UrlShortener(){
+export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
+  userInfo:UserInfo
+  localLinks:Array<{shortUrl:string,originalUrl:string}>,
+  setLinksInfo:React.Dispatch<React.SetStateAction<{
+    shortUrl: string;
+    originalUrl: string;
+}[]>>
+}){
   const [linkText,setlinkText]=useState("")
   const [errorText,setErrorText]=useState("")
-  const [linkInfo,setLinkInfo]=useState(Array<{shortUrl:string,originalUrl:string}>())
+  
   function shortenLink(){
     setErrorText("")
       if(linkText==null || linkText==""){
           setErrorText("No link provided!")
           return
       }
-      const regex=new RegExp(/^https?:\/\/[\w\/.?=%-&]*$/);
+      const regex=new RegExp(/^https?:\/\/[\w\/.?=%-&-]*$/);
       if(!regex.test(linkText)){
         setErrorText("This is not a link!")
         return
       }
       const url=new URL("http://localhost/api/v1/shortenURL")
       url.searchParams.append("url",linkText)
+      const body={
+        id_token:userInfo.id_token?userInfo.id_token:null
+      }
       fetch(url,{
-        method:"POST"
+        method:"POST",
+        body:JSON.stringify(body)
       })
         .then((response)=>{
           if (!response.ok){
@@ -30,7 +42,8 @@ export default function UrlShortener(){
           }
           return response.json()
         }).then(data=>{
-          setLinkInfo((linkInfo)=>{
+          
+          setLinksInfo((linkInfo)=>{  
             const newLink={
               shortUrl:data.shortUrl,
               originalUrl:linkText
@@ -73,8 +86,8 @@ export default function UrlShortener(){
             </div>
           </div>
         }
-       {linkInfo.length>0?
-        linkInfo.map(link=>
+       {localLinks.length>0?
+        localLinks.map(link=>
           <div key={link.shortUrl} className=' drop-shadow-lg flex w-full justify-center px-24 max-w-4xl' >
             <div className='bg-[#D1ECF1] w-full border rounded-md py-4 px-8 flex min-w-[500px]'>
               <div className='flex flex-col gap-3 w-full'>

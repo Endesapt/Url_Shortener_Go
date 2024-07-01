@@ -68,10 +68,10 @@ func (c *Controller) Login(ctx *gin.Context) {
 	}
 
 	response := models.LoginResponse{
-		AccessToken: data.AccessToken,
-		ExpiresIn:   data.ExpiresIn,
-		Email:       payload.Claims["email"].(string),
-		PhotoUrl:    payload.Claims["picture"].(string),
+		IDToken:   data.IdToken,
+		ExpiresIn: data.ExpiresIn,
+		Email:     payload.Claims["email"].(string),
+		PhotoUrl:  payload.Claims["picture"].(string),
 	}
 
 	ctx.JSON(http.StatusOK, response)

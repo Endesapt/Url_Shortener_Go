@@ -6,10 +6,7 @@ export default function UserProfile({userInfo,setUserInfo}:{
 }){
     function Logout(){
       setUserInfo({} as UserInfo)
-      localStorage.removeItem("access_token")
-      localStorage.removeItem("email")
-      localStorage.removeItem("expires_in")
-      localStorage.removeItem("photo_url")
+      localStorage.clear()
     }
     
     return(<div className='flex items-center ml-auto gap-5'>

@@ -31,9 +31,9 @@ func (c *Controller) ShortenUrl(ctx *gin.Context) {
 
 	id := GenerateRandString(10)
 
-	if userId, err := GetUserId(ctx); err == nil {
+	if userId, userEmail, err := GetUserId(ctx); err == nil {
 		c.RedisClient.SAdd(ctx.Request.Context(), "links:"+userId, id)
-		c.RedisClient.HSet(ctx.Request.Context(), id, "issuerID", userId)
+		c.RedisClient.HSet(ctx.Request.Context(), id, "issuerEmail", userEmail)
 	}
 
 	err := c.RedisClient.HSet(ctx.Request.Context(), id, "originalUrl", url).Err()
@@ -69,7 +69,7 @@ func (c *Controller) GetInfo(ctx *gin.Context) {
 	var (
 		urlInfo models.UrlInfoResponse
 	)
-	if err := c.RedisClient.HMGet(ctx.Request.Context(), id, "count", "originalUrl", "issuerID").Scan(&urlInfo); err != nil {
+	if err := c.RedisClient.HMGet(ctx.Request.Context(), id, "count", "originalUrl", "issuerEmail").Scan(&urlInfo); err != nil {
 		panic(err)
 	}
 
@@ -123,7 +123,7 @@ func (c *Controller) RedirectURL(ctx *gin.Context) {
 // @Failure      403  {object}  httputil.HTTPError
 // @Router       /api/v1/getLinks [get]
 func (c *Controller) GetLinks(ctx *gin.Context) {
-	userId, idErr := GetUserId(ctx)
+	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
 		httputil.NewError(ctx, http.StatusForbidden, idErr)
 	}
@@ -148,14 +148,16 @@ func GenerateRandString(n int) string {
 	return string(randomSequence)
 }
 
-func GetUserId(ctx *gin.Context) (string, error) {
-	userIdToken, err := ctx.Request.Cookie("IDtoken")
+func GetUserId(ctx *gin.Context) (string, string, error) {
+	var data struct {
+		IdToken string `json:"id_token"`
+	}
+	err := ctx.ShouldBind(&data)
 	if err == nil {
-		accessToken := userIdToken.Value
-		payload, err := idtoken.Validate(ctx.Request.Context(), accessToken, os.Getenv("AUTH_CLIENT_ID"))
+		payload, err := idtoken.Validate(ctx.Request.Context(), data.IdToken, os.Getenv("AUTH_CLIENT_ID"))
 		if err == nil {
-			return payload.Subject, nil
+			return payload.Subject, payload.Claims["email"].(string), nil
 		}
 	}
-	return "", err
+	return "", "", err
 }

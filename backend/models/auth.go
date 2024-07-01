@@ -20,8 +20,8 @@ type TokenResponse struct {
 }
 
 type LoginResponse struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int    `json:"expires_in"`
-	Email       string `json:"email"`
-	PhotoUrl    string `json:"photo_url"`
+	IDToken   string `json:"id_token"`
+	ExpiresIn int    `json:"expires_in"`
+	Email     string `json:"email"`
+	PhotoUrl  string `json:"photo_url"`
 }

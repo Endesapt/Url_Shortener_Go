@@ -15,12 +15,20 @@ export default function SignIn({setUserInfo}:{
                 body: JSON.stringify({ code: codeResponse.code }),
               })
               .then(response => response.json())
-              .then(data => {
-                console.log(data)
-                localStorage.setItem("access_token",data.access_token)
+              .then(async data => {
+                const expiredDate=new Date()
+                expiredDate.setSeconds(expiredDate.getSeconds()+data.expires_in)
+                localStorage.setItem("id_token",data.id_token)
                 localStorage.setItem("email",data.email)
-                localStorage.setItem("expires_in",data.expires_in)
+                localStorage.setItem("expires_in",expiredDate.toString())
                 localStorage.setItem("photo_url",data.photo_url)
+
+                const res=await fetch("http://localhost:80/api/v1/getLinks")
+                const linksData=await res.json()
+                console.log(linksData)
+                if(linksData!=null){
+                  data.links=linksData
+                }
                 setUserInfo({...data})
               })
               .catch(error => {

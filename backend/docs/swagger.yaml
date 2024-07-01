@@ -112,23 +112,18 @@ paths:
       summary: Shorten URL
       tags:
       - ShortenURL
-  /auth/callback:
-    get:
-      description: Redirects to / page with your credentials
-      responses: {}
-      summary: Callback to page
-      tags:
-      - Auth
-  /auth/login:
-    get:
+  /auth/google:
+    post:
+      description: Returns credentials from code sended from client
+      parameters:
+      - description: Code from google auth
+        in: body
+        name: code
+        required: true
+        schema:
+          type: string
       responses: {}
       summary: Login
-      tags:
-      - Auth
-  /auth/logout:
-    get:
-      responses: {}
-      summary: Logout
       tags:
       - Auth
   /link/{id}:
