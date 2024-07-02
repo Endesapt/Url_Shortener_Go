@@ -19,6 +19,103 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/deleteURL/{id}": {
+            "delete": {
+                "description": "Delete link with id in case you are the owner of the link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL Info/Edit"
+                ],
+                "summary": "Delete link with id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/editURL/{id}": {
+            "patch": {
+                "description": "Edit link with id in case you are the owner of the link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL Info/Edit"
+                ],
+                "summary": "Edit link with id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Edit Info",
+                        "name": "linkInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UrlEditRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/getInfo/{id}": {
             "get": {
                 "description": "Get info about how many times and what IPs where entering your site",
@@ -29,7 +126,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ShortenURL"
+                    "URL Info/Edit"
                 ],
                 "summary": "Info about shorten URL",
                 "parameters": [
@@ -70,6 +167,15 @@ const docTemplate = `{
                     "ShortenURL"
                 ],
                 "summary": "Get all links",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -109,6 +215,14 @@ const docTemplate = `{
                         "name": "url",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -204,6 +318,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UrlEditRequest": {
+            "type": "object",
+            "properties": {
+                "originalUrl": {
+                    "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UrlInfoResponse": {
             "type": "object",
             "properties": {
@@ -216,7 +341,7 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "issuerID": {
+                "issuerEmail": {
                     "type": "string"
                 },
                 "originalUrl": {

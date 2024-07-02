@@ -8,6 +8,13 @@ definitions:
         example: status bad request
         type: string
     type: object
+  models.UrlEditRequest:
+    properties:
+      originalUrl:
+        type: string
+      shortUrl:
+        type: string
+    type: object
   models.UrlInfoResponse:
     properties:
       count:
@@ -16,7 +23,7 @@ definitions:
         items:
           type: string
         type: array
-      issuerID:
+      issuerEmail:
         type: string
       originalUrl:
         type: string
@@ -36,6 +43,70 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
+  /api/v1/deleteURL/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete link with id in case you are the owner of the link
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: id_token
+        in: body
+        name: id_token
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Delete link with id
+      tags:
+      - URL Info/Edit
+  /api/v1/editURL/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Edit link with id in case you are the owner of the link
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: id_token
+        in: body
+        name: id_token
+        required: true
+        schema:
+          type: string
+      - description: Edit Info
+        in: body
+        name: linkInfo
+        required: true
+        schema:
+          $ref: '#/definitions/models.UrlEditRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Edit link with id
+      tags:
+      - URL Info/Edit
   /api/v1/getInfo/{id}:
     get:
       consumes:
@@ -61,12 +132,18 @@ paths:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Info about shorten URL
       tags:
-      - ShortenURL
+      - URL Info/Edit
   /api/v1/getLinks:
     get:
       consumes:
       - application/json
       description: Get all links that associated your account if you are registered
+      parameters:
+      - description: id_token
+        in: query
+        name: id_token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -94,6 +171,11 @@ paths:
         name: url
         required: true
         type: string
+      - description: id_token
+        in: body
+        name: id_token
+        schema:
+          type: string
       produces:
       - application/json
       responses:

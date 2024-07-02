@@ -10,3 +10,8 @@ type UrlInfoResponse struct {
 	OriginalUrl string   `json:"originalUrl" redis:"originalUrl"`
 	IssuerEmail string   `json:"issuerEmail" redis:"issuerEmail"`
 }
+
+type UrlEdit struct {
+	ShortUrl    string `json:"shortUrl" binding:"required"`
+	OriginalUrl string `json:"originalUrl" binding:"required"`
+}

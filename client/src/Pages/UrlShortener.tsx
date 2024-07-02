@@ -14,7 +14,7 @@ export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
 }){
   const [linkText,setlinkText]=useState("")
   const [errorText,setErrorText]=useState("")
-  
+  const [openInfo,setOpenInfo]=useState(false)
   function shortenLink(){
     setErrorText("")
       if(linkText==null || linkText==""){

@@ -60,11 +60,11 @@ function App() {
   }
   return (
     <>
-      <div className=' bg-[#284243] px-20 py-4 flex gap-10 items-center mb-6'>
+      <div className=' bg-[#284243] px-20 py-4 flex gap-10 items-center mb-6 '>
         <Link to="/"><img className=' h-12 ' src={logo}></img></Link>
         <div className=' flex gap-2 items-center text-white text-lg font-medium relative hover:cursor-pointer' onClick={(e)=>showDropDown(e)}>
           Products<FontAwesomeIcon icon={faAngleDown}/>
-          <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48'>
+          <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48 z-[100]'>
             <Link to="/link-managment" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faLink}/>
               Link Managment 
@@ -77,7 +77,7 @@ function App() {
         </div>
         <div className=' flex items-center gap-2 text-white text-lg font-medium relative hover:cursor-pointer ' onClick={(e)=>showDropDown(e)}>
           Resources<FontAwesomeIcon icon={faAngleDown}/>
-          <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48'>
+          <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48 z-[100]'>
             <div className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faRss}/>
               Blog 
@@ -96,7 +96,7 @@ function App() {
       <div className=' px-6 flex items-center flex-col gap-10'>
         <Routes>
           <Route path="/qr-code-generator" element={<QrCodeGenerator/>}/>
-          <Route path="/link-managment" element={<LinkManagment userInfo={userInfo}/>}/>
+          <Route path="/link-managment" element={<LinkManagment userInfo={userInfo} setUserInfo={setUserInfo} />} />
           <Route path="/" element={<UrlShortener userInfo={userInfo} setLinksInfo={setLinksInfo} localLinks={localLinks} />}/>
           <Route path="*" element={<Navigate to="/"/>}/>
         </Routes>

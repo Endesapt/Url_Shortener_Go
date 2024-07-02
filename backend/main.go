@@ -40,7 +40,7 @@ func main() {
 	//cors
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET"},
+		AllowMethods:     []string{"POST", "PATCH", "GET", "DELETE", "PUT"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -51,6 +51,8 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("/shortenURL", c.ShortenUrl)
+		v1.DELETE("/deleteURL/:id", c.DeleteURL)
+		v1.PATCH("/editURL/:id", c.EditURL)
 		v1.GET("/getInfo/:id", c.GetInfo)
 		v1.GET("/getLinks", c.GetLinks)
 	}
