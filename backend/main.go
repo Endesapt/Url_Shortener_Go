@@ -2,17 +2,14 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
+	"time"
 
 	"github.com/Endesapt/url_shortener_go/controller"
 	"github.com/Endesapt/url_shortener_go/docs"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/google"
 	"github.com/redis/go-redis/v9"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -23,7 +20,8 @@ import (
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
-	docs.SwaggerInfo.Title = "Url-Shortener v1"
+	docs.SwaggerInfo.Title = "Url-Shortener"
+	docs.SwaggerInfo.BasePath = "/api"
 
 	//environment variables
 	err := godotenv.Load()
@@ -36,41 +34,34 @@ func main() {
 		Addr: os.Getenv("REDIS_ADDR"),
 	})
 
-	//goth setup
-	key := os.Getenv("SESSION_SECRET") // Replace with your SESSION_SECRET or similar
-	maxAge := 86400 * 30               // 30 days
-	isProd := false                    // Set to true when serving over https
-
-	store := sessions.NewCookieStore([]byte(key))
-	store.MaxAge(maxAge)
-	store.Options.Path = "/"
-	store.Options.SameSite = http.SameSiteDefaultMode
-	store.Options.HttpOnly = true // HttpOnly should always be enabled
-	store.Options.Secure = isProd
-
-	gothic.Store = store
-	goth.UseProviders(
-		google.New(os.Getenv("AUTH_CLIENT_ID"),
-			os.Getenv("AUTH_CLIENT_SECRET"), os.Getenv("AUTH_CALLBACK_URL")),
-	)
-
 	//gin router
 	c := controller.NewController(rdb)
 	r := gin.Default()
-	r.GET("link/:id", c.RedirectURL)
-	v1 := r.Group("/api/v1")
+
+	//cors
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"POST", "PATCH", "GET", "DELETE", "PUT"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+	v1 := r.Group("/api")
 	{
+		v1.GET("/:id", c.RedirectURL)
 		v1.POST("/shortenURL", c.ShortenUrl)
+		v1.DELETE("/deleteURL/:id", c.DeleteURL)
+		v1.PATCH("/editURL/:id", c.EditURL)
 		v1.GET("/getInfo/:id", c.GetInfo)
 		v1.GET("/getLinks", c.GetLinks)
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/google", c.Login)
+		}
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
-	auth := r.Group("/auth")
-	{
-		auth.GET("/login", c.Login)
-		auth.GET("/callback", c.Callback)
-		auth.GET("logout", c.Logout)
-	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 	r.Run(":8080")
 
 }

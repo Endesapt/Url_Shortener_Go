@@ -19,7 +19,192 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/getInfo/{id}": {
+        "/api/shortenURL": {
+            "post": {
+                "description": "Shortens your  URL to small format for you to use it",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ShortenURL"
+                ],
+                "summary": "Shorten URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Shorten URL",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UrlShortenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/google": {
+            "post": {
+                "description": "Returns credentials from code sended from client",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Code from google auth",
+                        "name": "code",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/deleteURL/{id}": {
+            "delete": {
+                "description": "Delete link with id in case you are the owner of the link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL Info/Edit"
+                ],
+                "summary": "Delete link with id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/editURL/{id}": {
+            "patch": {
+                "description": "Edit link with id in case you are the owner of the link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL Info/Edit"
+                ],
+                "summary": "Edit link with id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Edit Info",
+                        "name": "linkInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UrlEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UrlEdit"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/getInfo/{id}": {
             "get": {
                 "description": "Get info about how many times and what IPs where entering your site",
                 "consumes": [
@@ -29,7 +214,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ShortenURL"
+                    "URL Info/Edit"
                 ],
                 "summary": "Info about shorten URL",
                 "parameters": [
@@ -57,7 +242,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/getLinks": {
+        "/getLinks": {
             "get": {
                 "description": "Get all links that associated your account if you are registered",
                 "consumes": [
@@ -70,6 +255,15 @@ const docTemplate = `{
                     "ShortenURL"
                 ],
                 "summary": "Get all links",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -89,79 +283,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/shortenURL": {
-            "post": {
-                "description": "Shortens your  URL to small format for you to use it",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ShortenURL"
-                ],
-                "summary": "Shorten URL",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Shorten URL",
-                        "name": "url",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UrlShortenResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/callback": {
-            "get": {
-                "description": "Redirects to / page with your credentials",
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Callback to page",
-                "responses": {}
-            }
-        },
-        "/auth/login": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Login",
-                "responses": {}
-            }
-        },
-        "/auth/logout": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Logout",
-                "responses": {}
-            }
-        },
-        "/link/{id}": {
+        "/{id}": {
             "get": {
                 "description": "Redirects to link that you have enetered on shortenURL path",
                 "consumes": [
@@ -211,6 +333,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UrlEdit": {
+            "type": "object",
+            "required": [
+                "originalUrl",
+                "shortUrl"
+            ],
+            "properties": {
+                "originalUrl": {
+                    "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UrlInfoResponse": {
             "type": "object",
             "properties": {
@@ -223,7 +360,7 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "issuerID": {
+                "issuerEmail": {
                     "type": "string"
                 },
                 "originalUrl": {
