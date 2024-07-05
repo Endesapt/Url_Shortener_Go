@@ -25,7 +25,7 @@ import (
 // @Success      200  {object}  models.UrlShortenResponse
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      404  {object}  httputil.HTTPError
-// @Router       /api/v1/shortenURL [post]
+// @Router       /api/shortenURL [post]
 func (c *Controller) ShortenUrl(ctx *gin.Context) {
 	url := ctx.Request.URL.Query().Get("url")
 	resultUrl := models.UrlShortenResponse{}
@@ -47,7 +47,7 @@ func (c *Controller) ShortenUrl(ctx *gin.Context) {
 		scheme = "https"
 	}
 
-	newLink := fmt.Sprintf("%s://%s/link/%s", scheme, ctx.Request.Host, id)
+	newLink := fmt.Sprintf("%s://%s/api/%s", scheme, ctx.Request.Host, id)
 	resultUrl.ShortURL = newLink
 	ctx.JSON(http.StatusOK, resultUrl)
 }
@@ -60,7 +60,7 @@ func (c *Controller) ShortenUrl(ctx *gin.Context) {
 // @Param        id    path     string  true "id"
 // @Success      200  {object}  models.UrlInfoResponse
 // @Failure      400  {object}  httputil.HTTPError
-// @Router       /api/v1/getInfo/{id} [get]
+// @Router       /getInfo/{id} [get]
 func (c *Controller) GetInfo(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var (
@@ -88,7 +88,7 @@ func (c *Controller) GetInfo(ctx *gin.Context) {
 // @Param        id    path     string  true "id"
 // @Success      302
 // @Failure      400  {object}  httputil.HTTPError
-// @Router       /link/{id} [get]
+// @Router       /{id} [get]
 func (c *Controller) RedirectURL(ctx *gin.Context) {
 	id := ctx.Param("id")
 	url, err := c.RedisClient.HGet(ctx.Request.Context(), id, "originalUrl").Result()
@@ -119,7 +119,7 @@ func (c *Controller) RedirectURL(ctx *gin.Context) {
 // @Param 	     id_token 	query 	string 	true 	"id_token"
 // @Success      200  {array} string
 // @Failure      403  {object}  httputil.HTTPError
-// @Router       /api/v1/getLinks [get]
+// @Router       /getLinks [get]
 func (c *Controller) GetLinks(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
@@ -144,7 +144,7 @@ func (c *Controller) GetLinks(ctx *gin.Context) {
 // @Success      200
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      403  {object}  httputil.HTTPError
-// @Router       /api/v1/deleteURL/{id} [delete]
+// @Router       /deleteURL/{id} [delete]
 func (c *Controller) DeleteURL(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
@@ -180,10 +180,10 @@ func (c *Controller) DeleteURL(ctx *gin.Context) {
 // @Param        id    path     string  true "id"
 // @Param 	     id_token 	body 	string 	true 	"id_token"
 // @Param		 linkInfo body  models.UrlEdit true "Edit Info"
-// @Success      200	models.UrlEdit
+// @Success      200  {object}  models.UrlEdit
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      403  {object}  httputil.HTTPError
-// @Router       /api/v1/editURL/{id} [patch]
+// @Router       /editURL/{id} [patch]
 func (c *Controller) EditURL(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
@@ -204,6 +204,11 @@ func (c *Controller) EditURL(ctx *gin.Context) {
 	}
 	if linkIssuer != userId {
 		httputil.NewError(ctx, http.StatusForbidden, errors.New("you cannot change this link"))
+		return
+	}
+	err = c.RedisClient.Get(ctx, data.ShortUrl).Err()
+	if err != redis.Nil {
+		httputil.NewError(ctx, http.StatusForbidden, errors.New("there is already short URL with this name"))
 		return
 	}
 

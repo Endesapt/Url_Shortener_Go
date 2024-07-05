@@ -61,7 +61,7 @@ function App() {
   return (
     <>
       <div className=' bg-[#284243] px-20 py-4 flex gap-10 items-center mb-6 '>
-        <Link to="/"><img className=' h-12 ' src={logo}></img></Link>
+        <Link to="/"><img className=' h-12 w-20 ' src={logo}></img></Link>
         <div className=' flex gap-2 items-center text-white text-lg font-medium relative hover:cursor-pointer' onClick={(e)=>showDropDown(e)}>
           Products<FontAwesomeIcon icon={faAngleDown}/>
           <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48 z-[100]'>
@@ -82,7 +82,7 @@ function App() {
               <FontAwesomeIcon icon={faRss}/>
               Blog 
             </div>
-            <Link to="http://localhost/swagger/index.html" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
+            <Link to="http://localhost/api/swagger/index.html" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faCode}/>
               API Documentation
             </Link>

@@ -8,12 +8,15 @@ definitions:
         example: status bad request
         type: string
     type: object
-  models.UrlEditRequest:
+  models.UrlEdit:
     properties:
       originalUrl:
         type: string
       shortUrl:
         type: string
+    required:
+    - originalUrl
+    - shortUrl
     type: object
   models.UrlInfoResponse:
     properties:
@@ -43,76 +46,11 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  /api/v1/deleteURL/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete link with id in case you are the owner of the link
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: id_token
-        in: body
-        name: id_token
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: Delete link with id
-      tags:
-      - URL Info/Edit
-  /api/v1/editURL/{id}:
-    patch:
-      consumes:
-      - application/json
-      description: Edit link with id in case you are the owner of the link
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: id_token
-        in: body
-        name: id_token
-        required: true
-        schema:
-          type: string
-      - description: Edit Info
-        in: body
-        name: linkInfo
-        required: true
-        schema:
-          $ref: '#/definitions/models.UrlEditRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: Edit link with id
-      tags:
-      - URL Info/Edit
-  /api/v1/getInfo/{id}:
+  /{id}:
     get:
       consumes:
       - application/json
-      description: Get info about how many times and what IPs where entering your
-        site
+      description: Redirects to link that you have enetered on shortenURL path
       parameters:
       - description: id
         in: path
@@ -122,45 +60,16 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UrlInfoResponse'
+        "302":
+          description: Found
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/httputil.HTTPError'
-      summary: Info about shorten URL
-      tags:
-      - URL Info/Edit
-  /api/v1/getLinks:
-    get:
-      consumes:
-      - application/json
-      description: Get all links that associated your account if you are registered
-      parameters:
-      - description: id_token
-        in: query
-        name: id_token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              type: string
-            type: array
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: Get all links
+      summary: Redirect to link
       tags:
       - ShortenURL
-  /api/v1/shortenURL:
+  /api/shortenURL:
     post:
       consumes:
       - application/json
@@ -208,11 +117,86 @@ paths:
       summary: Login
       tags:
       - Auth
-  /link/{id}:
+  /deleteURL/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete link with id in case you are the owner of the link
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: id_token
+        in: body
+        name: id_token
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Delete link with id
+      tags:
+      - URL Info/Edit
+  /editURL/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Edit link with id in case you are the owner of the link
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: id_token
+        in: body
+        name: id_token
+        required: true
+        schema:
+          type: string
+      - description: Edit Info
+        in: body
+        name: linkInfo
+        required: true
+        schema:
+          $ref: '#/definitions/models.UrlEdit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UrlEdit'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Edit link with id
+      tags:
+      - URL Info/Edit
+  /getInfo/{id}:
     get:
       consumes:
       - application/json
-      description: Redirects to link that you have enetered on shortenURL path
+      description: Get info about how many times and what IPs where entering your
+        site
       parameters:
       - description: id
         in: path
@@ -222,13 +206,42 @@ paths:
       produces:
       - application/json
       responses:
-        "302":
-          description: Found
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UrlInfoResponse'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/httputil.HTTPError'
-      summary: Redirect to link
+      summary: Info about shorten URL
+      tags:
+      - URL Info/Edit
+  /getLinks:
+    get:
+      consumes:
+      - application/json
+      description: Get all links that associated your account if you are registered
+      parameters:
+      - description: id_token
+        in: query
+        name: id_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Get all links
       tags:
       - ShortenURL
 swagger: "2.0"

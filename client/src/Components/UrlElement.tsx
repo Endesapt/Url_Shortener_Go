@@ -21,7 +21,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [shortUrlEdit, setShortUrl] = useState("")
     const [info, setInfo] = useState({} as UrlInfo)
     function openGetInfo() {
-        const url = new URL(`http://localhost/api/v1/getInfo/${shortUrl}`)
+        const url = new URL(`http://localhost/api/getInfo/${shortUrl}`)
         fetch(url, {
             method: "GET"
         })
@@ -33,7 +33,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function openEditInfo() {
-        const url = new URL(`http://localhost/api/v1/getInfo/${shortUrl}`)
+        const url = new URL(`http://localhost/api/getInfo/${shortUrl}`)
         fetch(url, {
             method: "GET"
         })
@@ -46,7 +46,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function editUrl(){
-        const url = new URL(`http://localhost/api/v1/editURL/${shortUrl}`)
+        const url = new URL(`http://localhost/api/editURL/${shortUrl}`)
         if(originalUrlEdit == "" || shortUrl=="")return
         const body = {
             id_token: userInfo.id_token,
@@ -75,7 +75,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function deleteLink() {
-        const url = new URL(`http://localhost/api/v1/deleteURL/${shortUrl}`)
+        const url = new URL(`http://localhost/api/deleteURL/${shortUrl}`)
         const body = {
             id_token: userInfo.id_token
         }
@@ -105,7 +105,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
         <div className="flex flex-col gap-3">
             <div className="flex gap-2">
                 <FontAwesomeIcon icon={faQrcode} className="h-5" />
-                <a href={`http://localhost/link/${shortUrl}`} className="text-orange-500">
+                <a href={`http://localhost/api/${shortUrl}`} className="text-orange-500">
                     {shortUrl}
                 </a>
             </div>

@@ -21,12 +21,12 @@ export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
           setErrorText("No link provided!")
           return
       }
-      const regex=new RegExp(/^https?:\/\/[\w\/.?=%-&-]*$/);
+      const regex=new RegExp(/^https?:\/\/[\w\/.:?=%-&-]*$/);
       if(!regex.test(linkText)){
         setErrorText("This is not a link!")
         return
       }
-      const url=new URL("http://localhost/api/v1/shortenURL")
+      const url=new URL("http://localhost/api/shortenURL")
       url.searchParams.append("url",linkText)
       const body={
         id_token:userInfo.id_token?userInfo.id_token:null

@@ -20,7 +20,8 @@ import (
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
-	docs.SwaggerInfo.Title = "Url-Shortener v1"
+	docs.SwaggerInfo.Title = "Url-Shortener"
+	docs.SwaggerInfo.BasePath = "/api"
 
 	//environment variables
 	err := godotenv.Load()
@@ -46,21 +47,21 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
-	r.GET("link/:id", c.RedirectURL)
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/api")
 	{
+		v1.GET("/:id", c.RedirectURL)
 		v1.POST("/shortenURL", c.ShortenUrl)
 		v1.DELETE("/deleteURL/:id", c.DeleteURL)
 		v1.PATCH("/editURL/:id", c.EditURL)
 		v1.GET("/getInfo/:id", c.GetInfo)
 		v1.GET("/getLinks", c.GetLinks)
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/google", c.Login)
+		}
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
-	auth := r.Group("/auth")
-	{
-		auth.POST("/google", c.Login)
-	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 	r.Run(":8080")
 
 }
