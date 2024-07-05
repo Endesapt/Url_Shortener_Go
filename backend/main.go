@@ -59,7 +59,7 @@ func main() {
 		{
 			auth.POST("/google", c.Login)
 		}
-		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
 	r.Run(":8080")

@@ -69,7 +69,9 @@ func (c *Controller) GetInfo(ctx *gin.Context) {
 	if err := c.RedisClient.HMGet(ctx.Request.Context(), id, "count", "originalUrl", "issuerEmail").Scan(&urlInfo); err != nil {
 		panic(err)
 	}
-
+	if urlInfo.OriginalUrl == "" {
+		httputil.NewError(ctx, http.StatusBadRequest, errors.New("this short url does not exist"))
+	}
 	ips, err := c.RedisClient.SMembers(ctx.Request.Context(), id+":ips").Result()
 	if err != nil {
 		panic(err)

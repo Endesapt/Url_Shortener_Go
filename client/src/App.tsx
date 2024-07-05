@@ -61,7 +61,7 @@ function App() {
   return (
     <>
       <div className=' bg-[#284243] px-20 py-4 flex gap-10 items-center mb-6 '>
-        <Link to="/"><img className=' h-12 w-20 ' src={logo}></img></Link>
+        <Link to="/"><img className='w-20' src="https://cdn.freebiesupply.com/images/large/2x/bitly-logo-black-transparent.png"></img></Link>
         <div className=' flex gap-2 items-center text-white text-lg font-medium relative hover:cursor-pointer' onClick={(e)=>showDropDown(e)}>
           Products<FontAwesomeIcon icon={faAngleDown}/>
           <div className='dropdown absolute hidden rounded-md border py-2 top-9 bg-white text-black text-sm w-48 z-[100]'>
