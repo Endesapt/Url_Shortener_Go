@@ -75,6 +75,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
                     } as UserInfo
                     return newUserInfo
                 })
+                setOpenEdit(false)
             }).catch(async (response)=>{
                 const message=await response;
                 setErrorText(message.message)

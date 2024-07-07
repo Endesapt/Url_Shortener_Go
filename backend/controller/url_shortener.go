@@ -164,12 +164,20 @@ func (c *Controller) DeleteURL(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusForbidden, errors.New("you cannot change this link"))
 		return
 	}
-	err = c.RedisClient.Del(ctx, id).Err()
+
+	_, err = c.RedisClient.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		err = c.RedisClient.Del(ctx, id).Err()
+		if err != nil {
+			return err
+		}
+		err = c.RedisClient.SRem(ctx, "links:"+userId, id).Err()
+		return err
+	})
 	if err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, errors.New("error while deleting link"))
+		httputil.NewError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	c.RedisClient.SRem(ctx, "links:"+userId, id)
+
 	ctx.JSON(http.StatusOK, nil)
 
 }
@@ -208,14 +216,17 @@ func (c *Controller) EditURL(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusForbidden, errors.New("you cannot change this link"))
 		return
 	}
-	err = c.RedisClient.Get(ctx, data.ShortUrl).Err()
-	if err != redis.Nil {
-		httputil.NewError(ctx, http.StatusForbidden, errors.New("there is already short URL with this name"))
-		return
-	}
+	if data.ShortUrl != id {
+		err = c.RedisClient.Get(ctx, data.ShortUrl).Err()
+		if err != redis.Nil {
 
-	c.RedisClient.HSet(ctx, id, "originalUrl", data.OriginalUrl)
-	c.RedisClient.Rename(ctx, id, data.ShortUrl)
+			httputil.NewError(ctx, http.StatusForbidden, errors.New("there is already short URL with this name"))
+			return
+		}
+		c.RedisClient.Rename(ctx, id, data.ShortUrl)
+	}
+	c.RedisClient.HSet(ctx, data.ShortUrl, "originalUrl", data.OriginalUrl)
+
 	ctx.JSON(http.StatusAccepted, data)
 
 }
