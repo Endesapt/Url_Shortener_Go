@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { UserInfo } from "../Models/UserInfo";
 import { link } from "fs";
 import Popup from "reactjs-popup";
-import 'reactjs-popup/dist/index.css';
 import { useState } from "react";
 
 
@@ -20,6 +19,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [originalUrlEdit, setOriginalUrl] = useState("")
     const [shortUrlEdit, setShortUrl] = useState("")
     const [info, setInfo] = useState({} as UrlInfo)
+    const [errorText,setErrorText]=useState("")
     function openGetInfo() {
         const url = new URL(`http://localhost/api/getInfo/${shortUrl}`)
         fetch(url, {
@@ -45,24 +45,27 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
                 setOpenEdit(true)
             })
     }
-    function editUrl(){
+    function editUrl() {
         const url = new URL(`http://localhost/api/editURL/${shortUrl}`)
-        if(originalUrlEdit == "" || shortUrl=="")return
+        if (originalUrlEdit == "" || shortUrl == "") return
         const body = {
             id_token: userInfo.id_token,
-            originalUrl:originalUrlEdit,
-            shortUrl:shortUrlEdit
+            originalUrl: originalUrlEdit,
+            shortUrl: shortUrlEdit
         }
         fetch(url, {
             method: "PATCH",
             body: JSON.stringify(body)
         })
             .then((response) => {
-                return response.json()
+                if(response.ok){
+                    return response.json()
+                }
+                return Promise.reject(response.json());
             }).then(_ => {
                 setUserInfo((userInfo) => {
                     const links = [...userInfo.links]
-                    links[links.findIndex((l) => l == shortUrl)]=shortUrlEdit
+                    links[links.findIndex((l) => l == shortUrl)] = shortUrlEdit
                     localStorage.setItem("userLinks", JSON.stringify(links))
                     const newUserInfo = {
                         email: userInfo.email,
@@ -72,6 +75,9 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
                     } as UserInfo
                     return newUserInfo
                 })
+            }).catch(async (response)=>{
+                const message=await response;
+                setErrorText(message.message)
             })
     }
     function deleteLink() {
@@ -84,7 +90,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             body: JSON.stringify(body)
         })
             .then((response) => {
-                if(!response.ok)return
+                if (!response.ok) return
                 return response.json()
             }).then(_ => {
                 setUserInfo((userInfo) => {
@@ -129,7 +135,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             </div>
         </div>
         <Popup open={openInfo} onClose={() => { setOpenInfo(false) }} modal nested>
-            <div className='modal m-[-7px] '>
+            <div className='modal '>
                 <div className=" h-10 p-2 text-center bg-[#284243] text-white">
                     Info http://localhost/{shortUrl}
                 </div>
@@ -144,33 +150,42 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
                 </div>
             </div>
         </Popup>
-        <Popup  open={openEdit} onClose={() => { setOpenEdit(false) }} modal nested>
-            <div className='modal m-[-7px]'>
+        <Popup open={openEdit} onClose={() => { setOpenEdit(false) }} modal nested>
+            <div className='modal '>
                 <div className='content'>
                     <div className=" p-4 h-10  flex items-center bg-[#284243] text-white">
                         Edit http://localhost/{shortUrl}
-                        <FontAwesomeIcon className="ml-auto hover:cursor-pointer" icon={faXmark} onClick={()=>setOpenEdit(false)}/>
+                        <FontAwesomeIcon className="ml-auto hover:cursor-pointer" icon={faXmark} onClick={() => setOpenEdit(false)} />
                     </div>
                     <div className=" flex flex-col gap-5 p-4">
                         <div className=" flex flex-col gap-1">
                             <p>Short URL</p>
                             <input className=' w-full p-2 border rounded-md placeholder:text-slate-400 '
-                            value={shortUrlEdit} onChange={(e) => setShortUrl(e.target.value)} >
-                        </input>
+                                value={shortUrlEdit} onChange={(e) => setShortUrl(e.target.value)} >
+                            </input>
                         </div>
                         <div className=" flex flex-col gap-1">
                             <p>Original URL</p>
                             <input className=' w-full p-2 border rounded-md placeholder:text-slate-400 '
-                            value={originalUrlEdit} onChange={(e) => setOriginalUrl(e.target.value)} >
-                        </input>
+                                value={originalUrlEdit} onChange={(e) => setOriginalUrl(e.target.value)} >
+                            </input>
                         </div>
-                        <div className=" bg-[#284243] p-2 w-fit flex text-white font-semibold gap-2 items-center rounded-md hover:cursor-pointer" 
-                            onClick={()=>{editUrl()}}>
-                            <FontAwesomeIcon icon={faSave}/>
+                        <div className=" bg-[#284243] p-2 w-fit flex text-white font-semibold gap-2 items-center rounded-md hover:cursor-pointer"
+                            onClick={() => { editUrl() }}>
+                            <FontAwesomeIcon icon={faSave} />
                             Save
                         </div>
+                        {errorText == "" ? null :
+                            <div className=' drop-shadow-lg flex w-full justify-center  max-w-4xl' >
+                                <div className='bg-slate-100 w-full border rounded-md py-4 px-8'>
+                                    <ul className='list-disc text-red-500'>
+                                        <li>{errorText}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
                     </div>
-                    
+
                 </div>
             </div>
         </Popup>
