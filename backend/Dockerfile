@@ -15,8 +15,8 @@ FROM alpine:edge
 
 WORKDIR /app
 
-COPY --from=build /app/myapp .
-COPY --from=build /app/.env .
+COPY --from=build ./app/myapp .
+COPY --from=build ./app/.env .
 
 
 ENV GIN_MODE=release
