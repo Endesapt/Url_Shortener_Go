@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/Endesapt/url_shortener_go/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,12 +20,6 @@ import (
 func main() {
 	docs.SwaggerInfo.Title = "Url-Shortener"
 	docs.SwaggerInfo.BasePath = "/api"
-
-	//environment variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
 	//redis database connection
 	rdb := redis.NewClient(&redis.Options{

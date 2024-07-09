@@ -19,58 +19,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/shortenURL": {
-            "post": {
-                "description": "Shortens your  URL to small format for you to use it",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ShortenURL"
-                ],
-                "summary": "Shorten URL",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Shorten URL",
-                        "name": "url",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "id_token",
-                        "name": "id_token",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UrlShortenResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/google": {
             "post": {
                 "description": "Returns credentials from code sended from client",
@@ -276,6 +224,58 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/shortenURL": {
+            "post": {
+                "description": "Shortens your  URL to small format for you to use it",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ShortenURL"
+                ],
+                "summary": "Shorten URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Shorten URL",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "id_token",
+                        "name": "id_token",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UrlShortenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }

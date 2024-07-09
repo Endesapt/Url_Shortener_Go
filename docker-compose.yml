@@ -11,14 +11,18 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     scale: 3
+    environment:
+      - REDIS_ADDR=redis:6379
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
+      - AUTH_CLIENT_SECRET=${AUTH_CLIENT_SECRET}
   redis:
     image: redis:latest
     restart: always
     volumes:
       - redisDb:/root/redis
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=
+      - REDIS_PORT=6379
 
 volumes:
   redisDb:

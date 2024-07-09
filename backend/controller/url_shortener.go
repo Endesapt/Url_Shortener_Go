@@ -25,7 +25,7 @@ import (
 // @Success      200  {object}  models.UrlShortenResponse
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      404  {object}  httputil.HTTPError
-// @Router       /api/shortenURL [post]
+// @Router       /shortenURL [post]
 func (c *Controller) ShortenUrl(ctx *gin.Context) {
 	url := ctx.Request.URL.Query().Get("url")
 	resultUrl := models.UrlShortenResponse{}

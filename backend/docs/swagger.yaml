@@ -69,40 +69,6 @@ paths:
       summary: Redirect to link
       tags:
       - ShortenURL
-  /api/shortenURL:
-    post:
-      consumes:
-      - application/json
-      description: Shortens your  URL to small format for you to use it
-      parameters:
-      - description: Shorten URL
-        in: query
-        name: url
-        required: true
-        type: string
-      - description: id_token
-        in: body
-        name: id_token
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UrlShortenResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: Shorten URL
-      tags:
-      - ShortenURL
   /auth/google:
     post:
       description: Returns credentials from code sended from client
@@ -242,6 +208,40 @@ paths:
           schema:
             $ref: '#/definitions/httputil.HTTPError'
       summary: Get all links
+      tags:
+      - ShortenURL
+  /shortenURL:
+    post:
+      consumes:
+      - application/json
+      description: Shortens your  URL to small format for you to use it
+      parameters:
+      - description: Shorten URL
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: id_token
+        in: body
+        name: id_token
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UrlShortenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Shorten URL
       tags:
       - ShortenURL
 swagger: "2.0"
