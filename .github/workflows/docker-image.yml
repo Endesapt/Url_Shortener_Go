@@ -20,9 +20,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push
+        name: Build and push backend
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:backend"
           push: true
           tags: endesapt/backend-url-shortener:latest
+      -
+        name: Build and push frontend with proxy
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: "{context}/nginx/Dockerfile"
+          push: true
+          tags: endesapt/proxy-url-shortener:latest
