@@ -26,7 +26,7 @@ export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
         setErrorText("This is not a link!")
         return
       }
-      const url=new URL("http://localhost/api/shortenURL")
+      const url=new URL("/api/shortenURL")
       url.searchParams.append("url",linkText)
       const body={
         id_token:userInfo.id_token?userInfo.id_token:null

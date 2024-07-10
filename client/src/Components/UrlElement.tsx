@@ -21,7 +21,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [info, setInfo] = useState({} as UrlInfo)
     const [errorText,setErrorText]=useState("")
     function openGetInfo() {
-        const url = new URL(`http://localhost/api/getInfo/${shortUrl}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`)
         fetch(url, {
             method: "GET"
         })
@@ -33,7 +33,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function openEditInfo() {
-        const url = new URL(`http://localhost/api/getInfo/${shortUrl}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`)
         fetch(url, {
             method: "GET"
         })
@@ -46,7 +46,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function editUrl() {
-        const url = new URL(`http://localhost/api/editURL/${shortUrl}`)
+        const url = new URL(`/api/editURL/${shortUrl}`)
         if (originalUrlEdit == "" || shortUrl == "") return
         const body = {
             id_token: userInfo.id_token,
@@ -82,7 +82,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function deleteLink() {
-        const url = new URL(`http://localhost/api/deleteURL/${shortUrl}`)
+        const url = new URL(`/api/deleteURL/${shortUrl}`)
         const body = {
             id_token: userInfo.id_token
         }
@@ -112,7 +112,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
         <div className="flex flex-col gap-3">
             <div className="flex gap-2">
                 <FontAwesomeIcon icon={faQrcode} className="h-5" />
-                <a href={`http://localhost/api/${shortUrl}`} className="text-orange-500">
+                <a href={`http://${window.location.hostname}/api/${shortUrl}`} className="text-orange-500">
                     {shortUrl}
                 </a>
             </div>
@@ -138,10 +138,10 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
         <Popup open={openInfo} onClose={() => { setOpenInfo(false) }} modal nested>
             <div className='modal '>
                 <div className=" h-10 p-2 text-center bg-[#284243] text-white">
-                    Info http://localhost/{shortUrl}
+                    Info {shortUrl}
                 </div>
                 <div className="p-2">
-                    Short URL: http://localhost/{shortUrl}
+                    Short URL: http://{window.location.hostname}/{shortUrl}
                 </div>
                 <div className="p-2">
                     Original URL: <a href={info.originalUrl} className="text-orange-500">{info.originalUrl}</a>
@@ -155,7 +155,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             <div className='modal '>
                 <div className='content'>
                     <div className=" p-4 h-10  flex items-center bg-[#284243] text-white">
-                        Edit http://localhost/{shortUrl}
+                        Edit http://{window.location.hostname}/{shortUrl}
                         <FontAwesomeIcon className="ml-auto hover:cursor-pointer" icon={faXmark} onClick={() => setOpenEdit(false)} />
                     </div>
                     <div className=" flex flex-col gap-5 p-4">
