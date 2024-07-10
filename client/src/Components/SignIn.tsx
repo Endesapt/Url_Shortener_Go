@@ -7,7 +7,7 @@ export default function SignIn({setUserInfo}:{
 }){
     const googleLogin = useGoogleLogin({
         onSuccess: codeResponse =>{
-            fetch(`${window.location.hostname}/api/auth/google`, {
+            fetch(`http://${window.location.hostname}/api/auth/google`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
