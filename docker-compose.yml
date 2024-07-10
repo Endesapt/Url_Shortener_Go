@@ -6,15 +6,19 @@ services:
       dockerfile: ./nginx/Dockerfile
     ports:
       - 80:80
+    networks:
+      - appNet
   app:
     build: 
       context: ./backend
       dockerfile: Dockerfile
-    scale: 3
     environment:
       - REDIS_ADDR=redis:6379
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
       - AUTH_CLIENT_SECRET=${AUTH_CLIENT_SECRET}
+    networks:
+      - appNet
+    scale: 3
   redis:
     image: redis:latest
     restart: always
@@ -23,6 +27,11 @@ services:
     environment:
       - REDIS_PASSWORD=
       - REDIS_PORT=6379
+    networks:
+      - appNet
 
 volumes:
   redisDb:
+
+networks:
+  appNet:

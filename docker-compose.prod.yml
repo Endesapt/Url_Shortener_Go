@@ -1,6 +1,8 @@
 version: "3.9"
 services:
   reverse-proxy:
-    image: endesapt/backend-url-shortener
-  app:
     image: endesapt/proxy-url-shortener
+    restart: unless-stopped
+  app:
+    image: endesapt/backend-url-shortener
+    restart: unless-stopped
