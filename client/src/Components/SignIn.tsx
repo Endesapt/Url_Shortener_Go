@@ -7,7 +7,7 @@ export default function SignIn({setUserInfo}:{
 }){
     const googleLogin = useGoogleLogin({
         onSuccess: codeResponse =>{
-            fetch('http://localhost:80/api/auth/google', {
+            fetch(`${window.location.hostname}/api/auth/google`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export default function SignIn({setUserInfo}:{
                 localStorage.setItem("expires_in",expiredDate.toString())
                 localStorage.setItem("photo_url",data.photo_url)
 
-                const linksUrl=new URL("http://localhost:80/api/getLinks")
+                const linksUrl=new URL("/api/getLinks",window.location.hostname)
                 linksUrl.searchParams.append("id_token",data.id_token)
                 const res=await fetch(linksUrl)
                 const linksData=await res.json()

@@ -21,7 +21,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [info, setInfo] = useState({} as UrlInfo)
     const [errorText,setErrorText]=useState("")
     function openGetInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`,window.location.hostname)
         fetch(url, {
             method: "GET"
         })
@@ -33,7 +33,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function openEditInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`,window.location.hostname)
         fetch(url, {
             method: "GET"
         })
@@ -46,7 +46,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function editUrl() {
-        const url = new URL(`/api/editURL/${shortUrl}`)
+        const url = new URL(`/api/editURL/${shortUrl}`,window.location.hostname)
         if (originalUrlEdit == "" || shortUrl == "") return
         const body = {
             id_token: userInfo.id_token,
@@ -82,7 +82,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function deleteLink() {
-        const url = new URL(`/api/deleteURL/${shortUrl}`)
+        const url = new URL(`/api/deleteURL/${shortUrl}`,window.location.hostname)
         const body = {
             id_token: userInfo.id_token
         }
