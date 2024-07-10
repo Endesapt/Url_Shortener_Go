@@ -82,7 +82,7 @@ function App() {
               <FontAwesomeIcon icon={faRss}/>
               Blog 
             </div>
-            <Link to="http://localhost/api/swagger/index.html" className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
+            <Link to={`http://${window.location.hostname}/api/swagger/index.html`} className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faCode}/>
               API Documentation
             </Link>

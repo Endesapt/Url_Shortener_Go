@@ -23,7 +23,7 @@ export default function SignIn({setUserInfo}:{
                 localStorage.setItem("expires_in",expiredDate.toString())
                 localStorage.setItem("photo_url",data.photo_url)
 
-                const linksUrl=new URL("/api/getLinks",window.location.hostname)
+                const linksUrl=new URL("/api/getLinks",`http://${window.location.hostname}`)
                 linksUrl.searchParams.append("id_token",data.id_token)
                 const res=await fetch(linksUrl)
                 const linksData=await res.json()
