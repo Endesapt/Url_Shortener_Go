@@ -21,7 +21,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [info, setInfo] = useState({} as UrlInfo)
     const [errorText,setErrorText]=useState("")
     function openGetInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`,`http://${window.location.hostname}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`,`${location.protocol}//${window.location.hostname}`)
         fetch(url, {
             method: "GET"
         })
@@ -33,7 +33,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function openEditInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`,`http://${window.location.hostname}`)
+        const url = new URL(`/api/getInfo/${shortUrl}`,`${location.protocol}//${window.location.hostname}`)
         fetch(url, {
             method: "GET"
         })
@@ -46,7 +46,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function editUrl() {
-        const url = new URL(`/api/editURL/${shortUrl}`,`http://${window.location.hostname}`)
+        const url = new URL(`/api/editURL/${shortUrl}`,`${location.protocol}//${window.location.hostname}`)
         if (originalUrlEdit == "" || shortUrl == "") return
         const body = {
             id_token: userInfo.id_token,
@@ -82,7 +82,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function deleteLink() {
-        const url = new URL(`/api/deleteURL/${shortUrl}`,`http://${window.location.hostname}`)
+        const url = new URL(`/api/deleteURL/${shortUrl}`,`${location.protocol}//${window.location.hostname}`)
         const body = {
             id_token: userInfo.id_token
         }
@@ -112,7 +112,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
         <div className="flex flex-col gap-3">
             <div className="flex gap-2">
                 <FontAwesomeIcon icon={faQrcode} className="h-5" />
-                <a href={`http://${window.location.hostname}/api/${shortUrl}`} className="text-orange-500">
+                <a href={`${location.protocol}//${window.location.hostname}/api/${shortUrl}`} className="text-orange-500">
                     {shortUrl}
                 </a>
             </div>
@@ -141,7 +141,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
                     Info {shortUrl}
                 </div>
                 <div className="p-2">
-                    Short URL: http://{window.location.hostname}/{shortUrl}
+                    Short URL: ${location.protocol}//{window.location.hostname}/{shortUrl}
                 </div>
                 <div className="p-2">
                     Original URL: <a href={info.originalUrl} className="text-orange-500">{info.originalUrl}</a>
@@ -155,7 +155,7 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             <div className='modal '>
                 <div className='content'>
                     <div className=" p-4 h-10  flex items-center bg-[#284243] text-white">
-                        Edit http://{window.location.hostname}/{shortUrl}
+                        Edit ${location.protocol}//{window.location.hostname}/{shortUrl}
                         <FontAwesomeIcon className="ml-auto hover:cursor-pointer" icon={faXmark} onClick={() => setOpenEdit(false)} />
                     </div>
                     <div className=" flex flex-col gap-5 p-4">
