@@ -82,10 +82,10 @@ function App() {
               <FontAwesomeIcon icon={faRss}/>
               Blog 
             </div>
-            <Link to={`https://${window.location.hostname}/api/swagger/index.html`} className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
+            <div onClick={()=>{window.open(`https://${window.location.hostname}/api/swagger/index.html`,'_blank')}} className='flex flex-row gap-1 items-center hover:bg-[#dbdfdf] hover:cursor-pointer p-3'>
               <FontAwesomeIcon icon={faCode}/>
               API Documentation
-            </Link>
+            </div>
           </div>
         </div>
         <div className=' ml-auto flex items-center gap-3'>
