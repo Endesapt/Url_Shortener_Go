@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { createRef, useEffect, useState } from 'react';
 import ColorPicker from 'react-pick-color';
 export default function QrCodeGenerator() {
-    const [link, setLink] = useState(`http://${window.location.hostname}`)
+    const [link, setLink] = useState(`https://${window.location.hostname}`)
     const [bgColor, setBgColor] = useState("#ffffff")
     const [fgColor, setFgColor] = useState("#000000")
     const colorBgPicker = createRef<HTMLDivElement>()

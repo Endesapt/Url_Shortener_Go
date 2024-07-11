@@ -3,6 +3,8 @@ services:
   reverse-proxy:
     image: endesapt/proxy-url-shortener
     restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
   app:
     image: endesapt/backend-url-shortener
     restart: unless-stopped

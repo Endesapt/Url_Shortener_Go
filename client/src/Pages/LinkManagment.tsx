@@ -22,7 +22,7 @@ export default function LinkManagment({ userInfo, setUserInfo }: {
             setErrorText("This is not a link!")
             return
         }
-        const url = new URL("/api/shortenURL",`http://${window.location.hostname}`)
+        const url = new URL("/api/shortenURL",`https://${window.location.hostname}`)
         url.searchParams.append("url", linkText)
         const body = {
             id_token: userInfo.id_token
