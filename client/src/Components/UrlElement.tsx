@@ -6,6 +6,7 @@ import { UserInfo } from "../Models/UserInfo";
 import { link } from "fs";
 import Popup from "reactjs-popup";
 import { useState } from "react";
+import { axiosApi } from "../axiosInstance";
 
 
 
@@ -21,48 +22,33 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
     const [info, setInfo] = useState({} as UrlInfo)
     const [errorText,setErrorText]=useState("")
     function openGetInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`,`https://${window.location.hostname}`)
-        fetch(url, {
-            method: "GET"
-        })
-            .then((response) => {
-                return response.json()
-            }).then(data => {
-                setInfo(data)
+        axiosApi.get(`getInfo/${shortUrl}`)
+            .then(data => {
+                setInfo(data.data)
                 setOpenInfo(true)
             })
     }
     function openEditInfo() {
-        const url = new URL(`/api/getInfo/${shortUrl}`,`https://${window.location.hostname}`)
-        fetch(url, {
-            method: "GET"
-        })
-            .then((response) => {
-                return response.json()
-            }).then((data: UrlInfo) => {
+        axiosApi.get(`getInfo/${shortUrl}`)
+            .then((res) => {
+                const data: UrlInfo=res.data
                 setOriginalUrl(data.originalUrl)
                 setShortUrl(shortUrl)
                 setOpenEdit(true)
             })
     }
     function editUrl() {
-        const url = new URL(`/api/editURL/${shortUrl}`,`https://${window.location.hostname}`)
+        const url = new URL(`/api/`,`https://${window.location.hostname}`)
         if (originalUrlEdit == "" || shortUrl == "") return
-        const body = {
+        axiosApi.patch(`editURL/${shortUrl}`, {
             id_token: userInfo.id_token,
             originalUrl: originalUrlEdit,
             shortUrl: shortUrlEdit
-        }
-        fetch(url, {
-            method: "PATCH",
-            body: JSON.stringify(body)
-        })
-            .then((response) => {
-                if(response.ok){
-                    return response.json()
+        }).then(response => {
+                if(response.status!=200){
+                    return Promise.reject(response.data);
                 }
-                return Promise.reject(response.json());
-            }).then(_ => {
+                
                 setUserInfo((userInfo) => {
                     const links = [...userInfo.links]
                     links[links.findIndex((l) => l == shortUrl)] = shortUrlEdit
@@ -82,18 +68,14 @@ export default function UrlElement({ shortUrl, userInfo, setUserInfo }: {
             })
     }
     function deleteLink() {
-        const url = new URL(`/api/deleteURL/${shortUrl}`,`https://${window.location.hostname}`)
-        const body = {
-            id_token: userInfo.id_token
-        }
-        fetch(url, {
-            method: "DELETE",
-            body: JSON.stringify(body)
-        })
-            .then((response) => {
-                if (!response.ok) return
-                return response.json()
-            }).then(_ => {
+        axiosApi.delete(`deleteURL/${shortUrl}`,{
+            params:{
+                id_token:userInfo.id_token,
+            }
+        }).then(response => {
+            if(response.status!=200){
+                return Promise.reject(response.data);
+            }
                 setUserInfo((userInfo) => {
                     const links = [...userInfo.links]
                     links.splice(links.findIndex((l) => l == shortUrl), 1)

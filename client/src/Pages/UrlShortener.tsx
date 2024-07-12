@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 import SignIn from "../Components/SignIn"
 import { UserInfo } from "../Models/UserInfo"
+import { axiosApi } from "../axiosInstance"
 
 export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
   userInfo:UserInfo
@@ -21,31 +22,20 @@ export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
           setErrorText("No link provided!")
           return
       }
-      const regex=new RegExp(/^https?:\/\/[\w\/.:?=%-\+&-]*$/);
+      const regex=new RegExp(/^https?:\/\/[\w\/.:?=%-@\+&-]*$/);
       if(!regex.test(linkText)){
         setErrorText("This is not a link!")
         return
       }
-      const url=new URL("/api/shortenURL",`https://${window.location.hostname}`)
-      url.searchParams.append("url",linkText)
-      const body={
-        id_token:userInfo.id_token?userInfo.id_token:null
-      }
-      fetch(url,{
-        method:"POST",
-        body:JSON.stringify(body)
-      })
-        .then((response)=>{
-          if (!response.ok){
-            setErrorText("Error while creating short URL!")
-            return
+      axiosApi.post("shortenURL",{
+        id_token:userInfo.id_token
+      }).then(response=>{
+          if(response.status!=200){
+            return Promise.reject(response.data)
           }
-          return response.json()
-        }).then(data=>{
-          
           setLinksInfo((linkInfo)=>{  
             const newLink={
-              shortUrl:data.shortUrl,
+              shortUrl:response.data.shortUrl,
               originalUrl:linkText
             }
             return [...linkInfo,newLink]

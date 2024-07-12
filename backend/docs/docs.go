@@ -40,6 +40,26 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/auth/logout": {
+            "post": {
+                "description": "deletes your credentials",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "responses": {}
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "refresh your credentials",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh",
+                "responses": {}
+            }
+        },
         "/deleteURL/{id}": {
             "delete": {
                 "description": "Delete link with id in case you are the owner of the link",
@@ -81,8 +101,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -143,8 +163,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -222,8 +242,8 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }

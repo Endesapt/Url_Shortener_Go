@@ -71,6 +71,7 @@ func (c *Controller) GetInfo(ctx *gin.Context) {
 	}
 	if urlInfo.OriginalUrl == "" {
 		httputil.NewError(ctx, http.StatusBadRequest, errors.New("this short url does not exist"))
+		return
 	}
 	ips, err := c.RedisClient.SMembers(ctx.Request.Context(), id+":ips").Result()
 	if err != nil {
@@ -120,12 +121,12 @@ func (c *Controller) RedirectURL(ctx *gin.Context) {
 // @Produce      json
 // @Param 	     id_token 	query 	string 	true 	"id_token"
 // @Success      200  {array} string
-// @Failure      403  {object}  httputil.HTTPError
+// @Failure      401  {object}  httputil.HTTPError
 // @Router       /getLinks [get]
 func (c *Controller) GetLinks(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
-		httputil.NewError(ctx, http.StatusForbidden, idErr)
+		httputil.NewError(ctx, http.StatusUnauthorized, idErr)
 		return
 	}
 	values, err := c.RedisClient.SMembers(ctx.Request.Context(), "links:"+userId).Result()
@@ -145,12 +146,12 @@ func (c *Controller) GetLinks(ctx *gin.Context) {
 // @Param 	     id_token 	body 	string 	true 	"id_token"
 // @Success      200
 // @Failure      400  {object}  httputil.HTTPError
-// @Failure      403  {object}  httputil.HTTPError
+// @Failure      401  {object}  httputil.HTTPError
 // @Router       /deleteURL/{id} [delete]
 func (c *Controller) DeleteURL(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
-		httputil.NewError(ctx, http.StatusForbidden, idErr)
+		httputil.NewError(ctx, http.StatusUnauthorized, idErr)
 		return
 	}
 	id := ctx.Param("id")
@@ -161,7 +162,7 @@ func (c *Controller) DeleteURL(ctx *gin.Context) {
 		return
 	}
 	if linkIssuer != userId {
-		httputil.NewError(ctx, http.StatusForbidden, errors.New("you cannot change this link"))
+		httputil.NewError(ctx, http.StatusUnauthorized, errors.New("you cannot change this link"))
 		return
 	}
 
@@ -192,12 +193,12 @@ func (c *Controller) DeleteURL(ctx *gin.Context) {
 // @Param		 linkInfo body  models.UrlEdit true "Edit Info"
 // @Success      200  {object}  models.UrlEdit
 // @Failure      400  {object}  httputil.HTTPError
-// @Failure      403  {object}  httputil.HTTPError
+// @Failure      401  {object}  httputil.HTTPError
 // @Router       /editURL/{id} [patch]
 func (c *Controller) EditURL(ctx *gin.Context) {
 	userId, _, idErr := GetUserId(ctx)
 	if idErr != nil {
-		httputil.NewError(ctx, http.StatusForbidden, idErr)
+		httputil.NewError(ctx, http.StatusUnauthorized, idErr)
 		return
 	}
 	id := ctx.Param("id")
@@ -213,21 +214,40 @@ func (c *Controller) EditURL(ctx *gin.Context) {
 		return
 	}
 	if linkIssuer != userId {
-		httputil.NewError(ctx, http.StatusForbidden, errors.New("you cannot change this link"))
+		httputil.NewError(ctx, http.StatusUnauthorized, errors.New("you cannot change this link"))
 		return
 	}
 	if data.ShortUrl != id {
 		err = c.RedisClient.Get(ctx, data.ShortUrl).Err()
 		if err != redis.Nil {
 
-			httputil.NewError(ctx, http.StatusForbidden, errors.New("there is already short URL with this name"))
+			httputil.NewError(ctx, http.StatusUnauthorized, errors.New("there is already short URL with this name"))
 			return
 		}
-		c.RedisClient.Rename(ctx, id, data.ShortUrl)
-	}
-	c.RedisClient.HSet(ctx, data.ShortUrl, "originalUrl", data.OriginalUrl)
 
-	ctx.JSON(http.StatusAccepted, data)
+	}
+	_, err = c.RedisClient.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		err = c.RedisClient.Rename(ctx, id, data.ShortUrl).Err()
+		if err != nil {
+			return err
+		}
+		err = c.RedisClient.HSet(ctx, data.ShortUrl, "originalUrl", data.OriginalUrl).Err()
+		if err != nil {
+			return err
+		}
+		err = c.RedisClient.SRem(ctx, "links:"+userId, id).Err()
+		if err != nil {
+			return err
+		}
+		err = c.RedisClient.SAdd(ctx, "links:"+userId, data.ShortUrl).Err()
+		return err
+	})
+	if err != nil {
+		httputil.NewError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, data)
 
 }
 

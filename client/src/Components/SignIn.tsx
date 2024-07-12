@@ -1,21 +1,18 @@
 import { CredentialResponse, GoogleLogin, useGoogleLogin, useGoogleOAuth } from "@react-oauth/google";
 import { ErrorResponse } from "react-router-dom";
 import { UserInfo } from "../Models/UserInfo";
+import { axiosApi } from "../axiosInstance";
 
 export default function SignIn({setUserInfo}:{
   setUserInfo:React.Dispatch<React.SetStateAction<UserInfo>>
 }){
     const googleLogin = useGoogleLogin({
         onSuccess: codeResponse =>{
-            fetch(`https://${window.location.hostname}/api/auth/google`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ code: codeResponse.code }),
-              })
-              .then(response => response.json())
-              .then(async data => {
+            axiosApi.post(`auth/google`,{ code: codeResponse.code },{
+              withCredentials:true
+            })
+              .then(async response => {
+                const data=response.data
                 const expiredDate=new Date()
                 expiredDate.setSeconds(expiredDate.getSeconds()+data.expires_in)
                 localStorage.setItem("id_token",data.id_token)
@@ -23,13 +20,15 @@ export default function SignIn({setUserInfo}:{
                 localStorage.setItem("expires_in",expiredDate.toString())
                 localStorage.setItem("photo_url",data.photo_url)
 
-                const linksUrl=new URL("/api/getLinks",`https://${window.location.hostname}`)
-                linksUrl.searchParams.append("id_token",data.id_token)
-                const res=await fetch(linksUrl)
-                const linksData=await res.json()
-                if(linksData!=null){
-                  data.links=linksData
-                  localStorage.setItem("userLinks",JSON.stringify(linksData))
+
+                const res=await axiosApi.get("getLinks",{
+                  params:{
+                    "id_token":data.id_token,
+                  }
+                })
+                if(res.status==200){
+                  data.links=res.data
+                  localStorage.setItem("userLinks",JSON.stringify(res.data))
                 }
                 setUserInfo({...data})
               })

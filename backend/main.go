@@ -30,15 +30,18 @@ func main() {
 	c := controller.NewController(rdb)
 	r := gin.Default()
 
-	//cors
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"POST", "PATCH", "GET", "DELETE", "PUT"},
-		AllowHeaders:     []string{"Origin", "Content-Type"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	//cors for debugging
+	if os.Getenv("GIN_MODE") != "release" {
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:3000"},
+			AllowMethods:     []string{"POST", "PATCH", "GET", "DELETE", "PUT"},
+			AllowHeaders:     []string{"Origin", "Content-Type"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
+
 	v1 := r.Group("/api")
 	{
 		v1.GET("/:id", c.RedirectURL)
@@ -50,6 +53,8 @@ func main() {
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/google", c.Login)
+			auth.POST("/logout", c.Logout)
+			auth.POST("/refresh", c.Refresh)
 		}
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
