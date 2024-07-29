@@ -28,6 +28,9 @@ import (
 // @Router       /shortenURL [post]
 func (c *Controller) ShortenUrl(ctx *gin.Context) {
 	url := ctx.Request.URL.Query().Get("url")
+	if url == "" {
+		httputil.NewError(ctx, http.StatusBadRequest, errors.New("url must be a link and not null"))
+	}
 	resultUrl := models.UrlShortenResponse{}
 
 	id := GenerateRandString(10)

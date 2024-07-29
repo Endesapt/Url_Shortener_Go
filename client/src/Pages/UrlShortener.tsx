@@ -29,6 +29,10 @@ export default function UrlShortener({userInfo,localLinks,setLinksInfo}:{
       }
       axiosApi.post("shortenURL",{
         id_token:userInfo.id_token
+      },{
+        params:{
+          url:linkText
+        }
       }).then(response=>{
           if(response.status!=200){
             return Promise.reject(response.data)
